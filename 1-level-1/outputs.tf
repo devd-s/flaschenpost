@@ -1,0 +1,23 @@
+# Outputs from root module
+
+output "storage_account_id" {
+  description = "The ID of  Azure Storage Account"
+  value       = module.azure_storage.storage_account_id
+}
+
+output "storage_account_primary_access_key" {
+  description = "The primary access key for Azure Storage Account"
+  value       = module.azure_storage.storage_account_primary_access_key
+  sensitive   = true
+}
+
+output "storage_account_primary_connection_string" {
+  description = "The primary connection string for Azure Storage Account"
+  value       = module.azure_storage.storage_account_primary_connection_string
+  sensitive   = true
+}
+
+output "container_id" {
+  description = "The ID of Azure Storage Container"
+  value       = module.azure_storage.container_id
+}
