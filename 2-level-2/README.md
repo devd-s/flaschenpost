@@ -1,5 +1,9 @@
+## Steps I followed
+
 1. I have created a yaml file for the creating the different resources for K8s cluster in single file for shop backend and other file for cron and also attaching screenshots.
+
 2. I have created a kind cluster using 'kind create cluster --config kind-config.yaml --name flaschenpost'
+
 3. Then using this command to create the deployment 'kubectl create deployment shop-backend --image=strm/helloworld-http:latest --port=80' 
 'kubectl expose deployment shop-backend --type=ClusterIP --port=80 --target-port=80'  and for ingress
 
