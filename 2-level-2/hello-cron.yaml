@@ -48,5 +48,5 @@ spec:
             args:
             - /bin/sh
             - -c
-            - echo "Hello World"
+            - echo "Hello SRE"
           restartPolicy: OnFailure
