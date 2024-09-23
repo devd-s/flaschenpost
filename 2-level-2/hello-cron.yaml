@@ -1,0 +1,52 @@
+# For a basic CronJob (like the "Hello World" example), no additional components are required beyond the CronJob resource itself.
+# If CronJob needs to interact with external services, use environment variables, manage storage, or require specific permissions, we can add ConfigMaps, Secrets, Volumes, or RBAC policies.
+# ---
+# apiVersion: v1
+# kind: ConfigMap
+# metadata:
+#   name: hello-world-config
+# data:
+#   message: "Hello World"
+# ---
+# apiVersion: batch/v1beta1
+# kind: CronJob
+# metadata:
+#   name: hello-world-cronjob
+# spec:
+#   schedule: "*/30 * * * *"  # Every 30 minutes
+#   jobTemplate:
+#     spec:
+#       template:
+#         spec:
+#           containers:
+#           - name: hello-world
+#             image: busybox
+#             args:
+#             - /bin/sh
+#             - -c
+#             - echo $(MESSAGE)  # Using environment variable
+#             env:
+#             - name: MESSAGE
+#               valueFrom:
+#                 configMapKeyRef:
+#                   name: hello-world-config
+#                   key: message
+#           restartPolicy: OnFailure
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: hello-world-cronjob
+spec:
+  schedule: "*/30 * * * *"  # Runs every 30 minutes
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: hello-world
+            image: busybox
+            args:
+            - /bin/sh
+            - -c
+            - echo "Hello World"
+          restartPolicy: OnFailure

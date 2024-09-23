@@ -1,0 +1,128 @@
+---
+# apiVersion: v1 # Keeping it commented for now for the sake of simplicity but this is required to enable https for k8s application . t configures the Ingress resource to use TLS (Transport Layer Security) for encrypting traffic between the client (such as a browser) and the server (your application)
+# kind: Secret
+# metadata:
+#   name: shop-backend-tls
+#   namespace: default
+# data:
+#   tls.crt: base64_encoded_certificate
+#   tls.key: base64_encoded_private_key
+# type: kubernetes.io/tls
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: shop-backend-config
+  namespace: default
+data:
+  # Configuration data (optional). For now, just an example entry.
+  APP_MODE: "testing"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shop-backend-api
+  namespace: default
+  labels:
+    app: shop-backend
+spec:
+  replicas: 3  # Minimum of three Pod replicas
+  selector:
+    matchLabels:
+      app: shop-backend
+  template:
+    metadata:
+      labels:
+        app: shop-backend
+    spec:
+     # Add security context for entire pod (can also be applied per container)
+      # securityContext:
+      #   # runAsNonRoot: true  # Ensuring  pod does not run as root
+      #   runAsUser: 1000     # Running  container with a non-root user ID
+      #   fsGroup: 2000       # Ensure file system access is restricted to this group
+      containers:
+        - name: shop-backend-container
+          image: strm/helloworld-http:latest  # Container image
+          ports:
+            - containerPort: 80               # Container exposes port 80
+          envFrom:
+            - configMapRef:
+                name: shop-backend-config     # Load ConfigMap as environment variables
+          livenessProbe:
+            tcpSocket:
+              port: 80                        # LivenessProbe using TCP requests to port 80
+            initialDelaySeconds: 10            # Initial delay before the first probe
+            periodSeconds: 10                  # Probe period (default)
+          readinessProbe:
+            httpGet:
+              path: "/"                       # ReadinessProbe using HTTP GET to "/" endpoint
+              port: 80
+            initialDelaySeconds: 10            # Initial delay before the first probe
+            periodSeconds: 1                   # Check readiness every 1 second
+            failureThreshold: 2                # Mark pod "Not Ready" after 2 failed probes
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
+          # securityContext:
+          #   allowPrivilegeEscalation: false  # Preventing privilege escalation
+          #   capabilities:
+          #     drop:
+          #       - ALL  # Drop all Linux capabilities for better security
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: shop-backend-service
+  namespace: default
+  labels:
+    app: shop-backend
+spec:
+  selector:
+    app: shop-backend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80  # Expose port 80 on the container
+  type: ClusterIP  # Cluster-internal service (use LoadBalancer or NodePort for external access)
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: shop-backend-hpa
+  namespace: default
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: shop-backend-api
+  minReplicas: 3  # Minimum number of replicas
+  maxReplicas: 10  # Maximum number of replicas in case of high load
+  targetCPUUtilizationPercentage: 70  # Target average CPU utilization
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: shop-backend-ingress
+  namespace: default
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - host: shop.example.com  # Your domain name for the application
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: shop-backend-service
+                port:
+                  number: 80
+  # tls:  # Configure HTTPS (optional)
+  #   - hosts:
+  #       - shop.example.com
+  #     secretName: shop-backend-tls  # Pre-configured TLS secret for HTTPS which I am keeping commented for the sake of simplicity for now. t configures the Ingress resource to use TLS (Transport Layer Security) for encrypting traffic between the client (such as a browser) and the server (your application).
