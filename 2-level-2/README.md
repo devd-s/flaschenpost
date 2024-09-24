@@ -35,3 +35,10 @@ And tweaking based on the document few setting using 'kubectl edit deploy deploy
 5. I have kept security context commented as image doesn't have any other user and when I am running it without root user, pod stuck in crashloopbackoff due permission denied error due '/main.sh: line 3: /www/index.html: Permission denied' and also network policies can be added to control, limit pod access by defining ingress and egress rules.
 
 5. Few things I have kept commented in yaml to show that these things are also necessary depending upon case to case but for the simplicity , I have for now commented them.
+
+## To create helm chart for an app
+
+1. Command to create the chart : helm create desired-name-of-chart
+2. Customize based on the needs like image repository resources and so on.
+3. To install 'helm install desird-app-name ./desired-name-of-chart'
+4. To upgrade 'helm upgrade desird-app-name ./desired-name-of-chart'
