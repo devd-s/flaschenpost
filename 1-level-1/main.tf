@@ -5,7 +5,7 @@ provider "azurerm" {
 module "azure_storage" {
   source = "./modules/storage-account"
 
-  resource_group_name      = "sre-challenge-flashenpost"
+  resource_group_name      = "sre-challenge-flaschenpost"
   department               = "SRE"
   container_name           = "sre"
 #  account_tier             = "Standard" # can be customized based on the needs, default is Standard 
