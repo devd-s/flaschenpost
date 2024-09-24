@@ -1,53 +1,51 @@
 1. Backend Servers (Azure Virtual Machines, App Services)
 
-Backend servers on Azure often run in Virtual Machines (VMs), Azure App Services, or other compute services. You can scale these dynamically using Azure's native tools.
+Backend servers on Azure often run in Virtual Machines (VMs), Azure App Services, or other compute services.
 Triggers for Scalability:
 
     CPU Utilization: When VM or App Service instances have high CPU usage (70-80% or more).
-    Memory Usage: High memory usage (75-80%) suggests that scaling is needed.
-    Request Latency: A surge in request processing times is a signal to add more instances.
-    HTTP Errors (500-series): A spike in HTTP 500 errors (internal server errors) indicates overload.
+    Memory Usage: High memory usage (75-80%) suggests scaling is needed.
+    HTTP Errors (500-series): A spike in HTTP 500 errors (internal server errors) indicates overload. This depends on case when actually is not quick enough to support spike.
     Throughput (requests per second): Scaling is required when incoming requests surpass the service's handling capacity.
 
 Azure Tools:
 
-    Azure Autoscale: Automatically scales VM Scale Sets or App Services based on predefined rules (CPU, memory, queue length, etc.). You can set upper and lower thresholds to trigger scaling events.
-        Use Case: If you have a web application hosted on Azure App Services, you can configure it to automatically scale out (add instances) when CPU usage exceeds 70% and scale in (remove instances) when usage drops below 30%.
+    Azure Autoscale: Automatically scales VM Scale Sets or App Services based on predefined rules (CPU, memory, queue length, etc.). Upper and lower thresholds to trigger scaling events can be set.
+        Use Case: If you have a web application hosted on Azure App Services, you can configure it to automatically scale out (add instances) when CPU usage exceeds by 70% and scale in (remove instances) when usage drops below by 30%.
 
-    Azure Load Balancer / Application Gateway: Distributes traffic across VMs or App Service instances, ensuring high availability as new instances are added.
-        Use Case: For applications using Virtual Machines, Azure Load Balancer distributes incoming requests to VMs as more are scaled up to handle traffic.
+    Azure Load Balancer / Application Gateway: Distributes traffic across VMs or App Service instances, ensuring high availability of new instances which are added.
+        Use Case: For applications using Virtual Machines, Azure Load Balancer distributes incoming requests to VMs as more VM' are added for scaling up to handle traffic.
 
-    Azure Monitor: Tracks CPU, memory, and disk usage across resources. You can set alerts to trigger scaling based on monitored metrics.
-        Use Case: Monitor your VMs or App Services, and when memory or CPU usage exceeds a threshold, an alert can trigger Azure Autoscale to add more instances.
+    Azure Monitor: Tracks CPU, memory, and disk usage across resources. Alerts can be set to trigger scaling based on monitored metrics.
+        Use Case: Monitor your VMs or App Services, and when memory or CPU usage exceeds a threshold, alerts can trigger Azure Autoscale to add more instances.
 Source : https://learn.microsoft.com/en-us/azure/virtual-machine-scale-sets/virtual-machine-scale-sets-autoscale-overview#autoscale-rule-criteria
 
 2. Database Performance (Azure SQL Database, Cosmos DB)
 
-Databases in Azure, such as Azure SQL Database or Cosmos DB, need scalable strategies to handle large amounts of data and high query throughput.
 Triggers for Scalability:
 
-    Query Latency: Slow queries which indicate the database can't handle the current load.
-    Connection Limits: When the number of active connections approaches till the limit or exceeds the database capacity.
-    CPU/Memory Usage: High resource usage (CPU > 80%, Memory > 75%) is a signal to scale.
+    Query Latency: Slow queries which indicate the database can't handle the current load.Using Query performance insights can be used to get the details of query and performance recommendations can be used to tweak the query.
+    CPU/Memory Usage: High resource usage (CPU > 80%, Memory > 75%) to scale.
     Disk I/O: High disk read/write latency, especially in read-heavy databases.
 
-Azure Tools:
+Tools:
 
     Azure SQL Database Elastic Pools: Scale databases dynamically based on resource consumption by pooling resources across multiple databases.
-        Use Case: Multiple Azure SQL databases can share resources in an elastic pool. When one database has a spike in traffic, the pool provides additional resources automatically.
+        Use Case: Multiple Azure SQL databases can share resources in an elastic pool. When one database has a spike in traffic, the pool provides additional resources automatically to accommodate unpredictable usage.
 
-    Azure Cosmos DB Autoscale: Cosmos DB can automatically scale throughput (RUs) based on the workload.
-        Use Case: If you have a globally distributed application using Cosmos DB and the request units (RUs) exceed a threshold, Cosmos DB will automatically adjust to handle the traffic without downtime.
+    Azure Cosmos DB Autoscale: Cosmos DB can automatically scale throughput (RUs) based on the workloads.
+        Use Case: If you have a globally distributed application using Cosmos DB and the request units (RUs) exceeds a threshold, Cosmos DB automatically adjust to handle the traffic without downtime.
 
-    Azure SQL Managed Instance: Supports vertical scaling to increase compute or memory. You can also add read replicas to handle more read-heavy traffic.
+    Azure SQL Managed Instance: You can  add read replicas to handle more read-heavy traffic. Scaling based on runbooks incase of need.
         Use Case: For applications that need strong consistency and frequent read-heavy operations, adding read replicas in Azure SQL can offload traffic from the main database.
+        Source : https://techcommunity.microsoft.com/t5/azure-database-support-blog/how-to-auto-scale-azure-sql-databases/ba-p/2235441
 
-    Azure Cache for Redis: To offload frequent database reads, caching solutions like Redis are crucial.
+    Azure Cache for Redis: To offload frequent database reads, caching solutions like Redis are crucial to maintain caches.
         Use Case: For read-heavy operations on Azure SQL or Cosmos DB, you can cache frequently queried data in Azure Cache for Redis to reduce database load.
 
 3. Service Bus Performance (Azure Service Bus, Azure Event Grid, RabbitMQ on Azure)
 
-Message brokers like Azure Service Bus or RabbitMQ facilitate communication between microservices or distributed components. Their scalability is key for handling increasing traffic or message loads.
+
 Triggers for Scalability:
 
     Queue Length: When the length of unprocessed messages in a queue exceeds a certain threshold.
@@ -55,12 +53,12 @@ Triggers for Scalability:
     Processing Latency: Increasing time from when a message is enqueued to when it’s processed.
     CPU and Memory Usage (for RabbitMQ): High resource usage signals the need for additional broker instances or higher service tiers.
 
-Azure Tools:
+Tools:
 
     Azure Service Bus Autoscale: Automatically scale Service Bus resources based on metrics like message count and queue length.
         Use Case: If your queue length exceeds 1000 unprocessed messages for more than 5 minutes, Azure can automatically scale up resources to handle more throughput.
 
-    Azure Functions with Service Bus Trigger: Use Azure Functions to consume Service Bus messages dynamically. Functions automatically scale based on the number of messages in the queue.
+    Azure Functions with Service Bus Trigger: Using Azure Functions to consume Service Bus messages dynamically. Functions can automatically scale based on the number of messages in the queue.
         Use Case: Azure Functions can scale out rapidly to consume messages when Service Bus queues back up. As more messages are added, Azure Functions spin up more instances to process them concurrently.
 
     KEDA (Kubernetes-based Event Driven Autoscaling): KEDA can monitor queue lengths in Azure Service Bus or RabbitMQ and dynamically scale Kubernetes deployments based on the number of messages.
@@ -69,19 +67,18 @@ Azure Tools:
     Azure Monitor and Alerts: Track metrics like queue length and processing latency, and trigger autoscaling actions when necessary.
         Use Case: Use Azure Monitor to observe if a specific queue's length is growing beyond a normal threshold and trigger an autoscale rule.
 
-4. Docker + Kubernetes (Azure Kubernetes Service – AKS)
+4. Containerized services running on a Kubernetes cluster.
 
-In a containerized environment, Azure Kubernetes Service (AKS) is widely used for orchestrating Docker containers. Scaling here involves both scaling containers (pods) and scaling the Kubernetes cluster.
+In a containerized environment, Azure Kubernetes Service (AKS or EKS) is widely used for orchestrating Docker containers. Scaling here involves both scaling containers (pods) and scaling the Kubernetes cluster.
 Triggers for Scalability:
 
     CPU/Memory Requests: High CPU or memory usage in pods indicates they need to scale horizontally (more pods) or vertically (larger resource allocations).
-    Pod Latency: Slow API responses can signal the need for scaling.
     Node Resource Usage: High resource consumption (CPU, memory) at the node level.
     Ingress Traffic: Increased traffic can necessitate scaling the number of ingress pods or the nodes behind them.
 
-Azure Tools:
+Tools:
 
-    Horizontal Pod Autoscaler (HPA): In AKS, the Horizontal Pod Autoscaler automatically adjusts the number of pods in a deployment based on CPU, memory usage, or custom metrics.
+    Horizontal Pod Autoscaler (HPA): In AKS or EKS, the Horizontal Pod Autoscaler can be used to automatically adjusts the number of pods in a deployment based on CPU, memory usage, or custom metrics.
         Use Case: If a microservice is handling increasing traffic, and its CPU usage consistently exceeds 70%, HPA can increase the number of pods in that service to handle the load.
 
     KEDA (Kubernetes Event-Driven Autoscaling): KEDA enables event-driven autoscaling in Kubernetes. It can scale pods based on event sources like Azure Service Bus, RabbitMQ, or HTTP traffic.
@@ -91,10 +88,10 @@ Azure Tools:
         Use Case: If your pods require more CPU or memory than the current node pool can provide, the Cluster Autoscaler will add more nodes to the AKS cluster. It will also remove nodes if they are no longer needed, ensuring cost efficiency.
 
     Azure Monitor for Containers: Azure Monitor integrates with AKS to provide in-depth monitoring of container performance metrics like CPU and memory utilization. You can set alerts to trigger scaling actions based on these metrics.
-        Use Case: Track the performance of your AKS pods and configure alerts to trigger HPA or Cluster Autoscaler when resource consumption hits critical levels.
+        Use Case: Tracking the performance of your AKS pods and configuring alerts to trigger HPA or Cluster Autoscaler when resource consumption hits critical levels.
 
-    Azure Traffic Manager: Distributes traffic across multiple AKS clusters in different regions or zones, ensuring high availability even under heavy traffic.
-        Use Case: If one AKS cluster becomes overloaded or unavailable, Traffic Manager can route traffic to a healthy cluster in another region.
+    Azure Traffic Manager: Distributing traffic across multiple AKS clusters in different regions or zones, ensuring high availability under heavy traffic.
+        Use Case: If one AKS cluster becomes overloaded or unavailable, Traffic Manager can route traffic to healthy cluster in another region.
 
 Summary of Azure Tools for Scaling:
 
