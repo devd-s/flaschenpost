@@ -4,13 +4,13 @@
 
 2. While setting up things for azure , I need to create service principal using below command <az ad sp create-for-rbac --name <service-principal-name> --role Contributor --scopes /subscriptions/<your-subscription-id> and then setting up enviornment variables which are 
 '''
-export ARM_CLIENT_ID="11111111-2222-3333-4444-555555555555"
+ export ARM_CLIENT_ID="11111111-2222-3333-4444-555555555555"
 
-export ARM_CLIENT_SECRET="aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+ export ARM_CLIENT_SECRET="aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
 
-export ARM_TENANT_ID="66666666-7777-8888-9999-000000000000"
+ export ARM_TENANT_ID="66666666-7777-8888-9999-000000000000"
 
-export ARM_SUBSCRIPTION_ID="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+ export ARM_SUBSCRIPTION_ID="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 '''
 
 3. required_version = ">= 1.0.0" specifies that the Terraform configuration requires Terraform version 1.0.0 or higher to be used.This ensures that code takes advantage of features and improvements available in newer Terraform versions, avoiding compatibility issues.tfswitch can also be used when working with multiple terraform versions.
