@@ -5,8 +5,11 @@
 2. While setting up things for azure , I need to create service principal using below command <az ad sp create-for-rbac --name <service-principal-name> --role Contributor --scopes /subscriptions/<your-subscription-id> and then setting up enviornment variables which are 
 '''
 export ARM_CLIENT_ID="11111111-2222-3333-4444-555555555555"
+
 export ARM_CLIENT_SECRET="aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+
 export ARM_TENANT_ID="66666666-7777-8888-9999-000000000000"
+
 export ARM_SUBSCRIPTION_ID="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 '''
 
