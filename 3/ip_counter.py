@@ -17,7 +17,7 @@ def process_log_file(filename):
         #opening the file with read permissions
         with open(filename, 'r') as file:
             for line in file:
-                # using rstrip to strip \n and split the output getting the value at first index
+                # using rstrip to strip \n and split the output getting the value at 0th index
                 stripped_ip = (line.rstrip()).split()[0]
                 # dict.get(key, default): The method returns the value for key if it exists in the dictionary. If the key does not exist, it returns the default value (which is 0 in this case) and it is more concise 
                 # and avoids the double lookup, making it slightly more efficient.
